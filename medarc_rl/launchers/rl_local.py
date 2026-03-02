@@ -60,12 +60,10 @@ def rl_local(config: RLConfig) -> None:
         json_logging=config.log.json_logging,
     )
 
-    if config.dump_config is not None:
-        logger.warning(
-            "--dump-config is set. No RL training will be started. Only writing resolved subconfigs to disk."
-        )
-        write_subconfigs(config, config.dump_config)
-        logger.info(f"Dumping resolved subconfigs to {config.dump_config}")
+    if config.dry_run:
+        logger.warning("--dry-run is set. No RL training will be started. Only writing resolved subconfigs to disk.")
+        write_subconfigs(config, config.output_dir)
+        logger.info(f"Dumping resolved subconfigs to {config.output_dir}")
         return
 
     if config.deployment.type != "single_node":
