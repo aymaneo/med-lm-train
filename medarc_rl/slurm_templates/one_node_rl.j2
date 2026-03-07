@@ -3,11 +3,23 @@
 #SBATCH --job-name={{ job_name }}
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --gres=gpu:{{ total_gpus }}
-{% if total_gpus == 8 %}
+#SBATCH --gpus-per-task={{ gpus }}
+{% if gpus == 8 %}
 #SBATCH --exclusive
 {% else %}
 #SBATCH --cpus-per-gpu={{ cpus_per_gpu }}
+{% endif %}
+{% if slurm_resume %}
+#SBATCH --requeue
+{% endif %}
+{% if qos %}
+#SBATCH --qos={{ qos }}
+{% endif %}
+{% if mail_type %}
+#SBATCH --mail-type={{ mail_type }}
+{% endif %}
+{% if mail_user %}
+#SBATCH --mail-user={{ mail_user }}
 {% endif %}
 #SBATCH --export=ALL
 #SBATCH --output="{{ output_dir }}/slurm/job_%j.log"

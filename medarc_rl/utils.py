@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, TypeVar
 
 import tomli_w
 import typer
-from prime_rl.utils.pydantic_config import extract_toml_paths, to_kebab_case
+from pydantic import ValidationError
+from pydantic_config import ConfigFileError
+from prime_rl.utils.config import cli
 
 TYPER_PASSTHROUGH_CONTEXT = {"allow_extra_args": True, "ignore_unknown_options": True}
 T = TypeVar("T")
@@ -46,26 +49,30 @@ def _write_toml(path: Path, data: dict[str, Any]) -> None:
 
 def _load_settings_from_toml(
     config_cls: type[T],
-    config_path: Path,
+    config_paths: list[Path],
     *,
     extra_cli_args: list[str] | None = None,
     **overrides: Any,
 ) -> T:
-    if not config_path.exists():
-        raise typer.BadParameter(f"Config file does not exist: {config_path}", param_hint="CONFIG_TOML")
+    if not config_paths:
+        raise typer.BadParameter("At least one config file is required.", param_hint="CONFIG_TOML")
+    for config_path in config_paths:
+        if not config_path.exists():
+            raise typer.BadParameter(f"Config file does not exist: {config_path}", param_hint="CONFIG_TOML")
 
     reserved_roots = set(overrides)
     filtered_extra_args = filter_wrapper_owned_cli_args(extra_cli_args or [], override_roots=reserved_roots)
-    args = ["@", str(config_path), *filtered_extra_args]
-    toml_paths, cli_args = extract_toml_paths(args)
-    if not toml_paths:
-        raise typer.BadParameter(f"Failed to resolve TOML paths from {config_path}", param_hint="CONFIG_TOML")
-
-    config_cls.set_toml_files([str(path) for path in toml_paths])
     try:
-        return config_cls(_cli_parse_args=to_kebab_case(cli_args), **overrides)
-    finally:
-        config_cls.clear_toml_files()
+        return cli(
+            config_cls,
+            args=[
+                *[item for config_path in config_paths for item in ("@", str(config_path))],
+                *filtered_extra_args,
+                *_overrides_to_cli_args(overrides),
+            ],
+        )
+    except (ConfigFileError, ValidationError, SystemExit) as e:
+        raise typer.BadParameter(str(e), param_hint="CONFIG_TOML") from e
 
 
 def extra_config_args(ctx: typer.Context, *, positional_count: int = 1) -> list[str]:
@@ -129,3 +136,34 @@ def filter_wrapper_owned_cli_args(cli_args: list[str], *, override_roots: set[st
             i += 1
 
     return filtered
+
+
+def _overrides_to_cli_args(overrides: dict[str, Any]) -> list[str]:
+    args: list[str] = []
+    for key, value in overrides.items():
+        args.extend(_flatten_override(key, value))
+    return args
+
+
+def _flatten_override(key: str, value: Any) -> list[str]:
+    option = f"--{key.replace('_', '-')}"
+
+    if value is None:
+        return []
+
+    if isinstance(value, dict):
+        args: list[str] = []
+        for subkey, subvalue in value.items():
+            args.extend(_flatten_override(f"{key}.{subkey}", subvalue))
+        return args
+
+    if isinstance(value, bool):
+        return [option] if value else [f"--no-{key.replace('_', '-')}"]
+
+    if isinstance(value, Path):
+        return [option, str(value)]
+
+    if isinstance(value, (list, tuple)):
+        return [option, json.dumps(value)]
+
+    return [option, str(value)]

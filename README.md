@@ -31,8 +31,9 @@ uv sync
 For flash attention support:
 
 ```bash
-uv sync --extra flash-attn      # flash-attn v2
-uv sync --extra flash-attn-3    # flash-attn v2 + v3 (use for H100s)
+uv sync --extra flash-attn-2    # flash-attn 2
+uv sync --extra flash-attn-3    # flash-attn 2 + 3 (use for H100s)
+uv sync --extra flash-attn-4    # flash-attn 2, 3, & 4 (use for B200s)
 ```
 
 ## medarc_slurm
@@ -41,20 +42,41 @@ uv sync --extra flash-attn-3    # flash-attn v2 + v3 (use for H100s)
 
 ```bash
 # SFT: single torchrun job
-medarc_slurm sft config.toml --output-dir runs/my-sft --gpus 2
+medarc_slurm sft --config config.toml --output-dir runs/my-sft --gpus 2
 
 # RL: splits GPUs between vLLM inference and training
-medarc_slurm rl config.toml --output-dir runs/my-rl --train-gpus 1 --infer-gpus 2
+medarc_slurm rl --config config.toml --output-dir runs/my-rl --train-gpus 1 --infer-gpus 2
 
 # RL: share a single GPU between inference and training
-medarc_slurm rl config.toml --output-dir runs/my-rl --single-gpu
+medarc_slurm rl --config config.toml --output-dir runs/my-rl --single-gpu
+
+# SFT: low-priority queue + email notifications + resume from latest checkpoint
+medarc_slurm sft --config config.toml \
+  --output-dir runs/my-sft \
+  --gpus 2 \
+  --priority low \
+  --mail all \
+  --mail-user email@domain.com \
+  --slurm-resume
+
+# Validate an RL submission (including dependency syntax) without creating a job
+medarc_slurm rl --config config.toml \
+  --output-dir runs/my-rl \
+  --train-gpus 1 \
+  --infer-gpus 2 \
+  --dependency afterok:123456 \
+  --test-only
 ```
 
 Generated artifacts are written to `--output-dir`:
 - `sft.sh` or `rl.sh` — the SLURM batch script
 - `configs/` — resolved TOML subconfigs passed to each component
 
-You can pass PRIME-RL config overrides directly as extra flags (for example `--wandb.project my-proj --wandb.name my-run`). You may also insert `--` before passthrough overrides for readability, but it is optional.
+You can pass PRIME-RL config overrides directly as extra flags (for example `--wandb.project my-proj --wandb.name my-run`). You may also insert `--` before passthrough overrides for readability, but it is optional. To layer multiple PRIME-RL configs, repeat `--config` with later files overriding earlier ones.
+
+`medarc_slurm` now defaults `--account` to `training`. You can override it with `--account <name>`.
+Email mode is `--mail all` or `--mail begin_end` (with `--mail-user`).
+Use `--dependency "<expr>"` to pass SLURM dependencies and `--test-only` to run `sbatch` validation without submitting.
 
 Run `medarc_slurm sft --help` or `medarc_slurm rl --help` for more details on available options.
 

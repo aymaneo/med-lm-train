@@ -13,8 +13,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-flash-attn = ["prime-rl[flash-attn]"]
-flash-attn-3 = ["prime-rl[flash-attn,flash-attn-cute]", "flash_attn_3"]
+flash-attn-2 = ["prime-rl[flash-attn]"]
+flash-attn-3 = ["prime-rl[flash-attn]", "flash_attn_3"]
+flash-attn-4 =  ["prime-rl[flash-attn]", "flash_attn_3", "flash-attn-4>=4.0.0b4"]
 
 [project.scripts]
 medarc_slurm = "medarc_rl.medarc_slurm:app"
@@ -30,14 +31,20 @@ module-root = ""
 
 [tool.uv.sources]
 prime-rl = { path = "prime-rl", editable = true }
-transformers = { git = "https://github.com/huggingface/transformers.git", rev = "609e3d5" }
-vllm = { url = "https://vllm-wheels.s3.us-west-2.amazonaws.com/7a06e5b05b170d7da31845866da0a99fc65253a1/vllm-0.16.0rc3-cp38-abi3-manylinux_2_31_x86_64.whl" }
+torch = { index = "pytorch-cu128" }
+transformers = { git = "https://github.com/huggingface/transformers.git", rev = "5c1c72b" }
+vllm = { url = "https://wheels.vllm.ai/097eb544e9a22810c9b7a59e586b61627b308362/vllm-0.17.0rc0-cp38-abi3-manylinux_2_31_x86_64.whl", marker = "platform_machine == 'x86_64'" }
 flash_attn_3 = { index = "flash-attn-3-cu128-torch2100" }
 
 [[tool.uv.index]]
 name = "flash-attn-3-cu128-torch2100"
 url = "https://windreamer.github.io/flash-attention3-wheels/cu128_torch2100"
 format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
 [dependency-groups]
@@ -50,9 +57,15 @@ dev = [
 preview = true
 package = true
 prerelease = "allow"
+environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "sys_platform == 'linux' and platform_machine == 'aarch64'",
+]
 override-dependencies = [
     "nvidia-cudnn-cu12>=9.15",
+    "nvidia-cutlass-dsl>=4.4.1",
     "transformers>=5.1.0.dev0",
+    "quack-kernels>=0.2.7",
 ]
 
 [tool.pytest.ini_options]

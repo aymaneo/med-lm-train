@@ -16,12 +16,12 @@ from pathlib import Path
 from subprocess import Popen
 from threading import Event, Thread
 
+from pydantic_config import cli
 from prime_rl.configs.rl import RLConfig
 from prime_rl.entrypoints.rl import write_subconfigs
 from prime_rl.utils.logger import setup_logger
 from prime_rl.utils.pathing import get_log_dir
 from prime_rl.utils.process import cleanup_processes, cleanup_threads, monitor_process
-from prime_rl.utils.pydantic_config import parse_argv
 from prime_rl.utils.utils import get_free_port
 
 
@@ -315,7 +315,7 @@ def rl_local(config: RLConfig) -> None:
 
 
 def main() -> None:
-    config = parse_argv(RLConfig)
+    config = cli(RLConfig)
     rl_local(config)
 
 
