@@ -27,7 +27,7 @@ uv run python -c "import alphabet_sort"
 Submit an 8-GPU RL job:
 
 ```bash
-medarc_slurm rl examples/alphabet_sort/rl.toml \
+medarc_slurm rl --config examples/alphabet_sort/rl.toml \
     --output-dir output/examples/alphabet-sort \
     --train-gpus 2 \
     --infer-gpus 6 \
@@ -38,7 +38,7 @@ medarc_slurm rl examples/alphabet_sort/rl.toml \
 Or preview without submitting:
 
 ```bash
-medarc_slurm rl examples/alphabet_sort/rl.toml \
+medarc_slurm rl --config examples/alphabet_sort/rl.toml \
     --output-dir output/examples/alphabet-sort \
     --train-gpus 2 \
     --infer-gpus 6 \

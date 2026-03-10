@@ -21,7 +21,7 @@ uv run python -c "import math_verify"
 Submit a 4-GPU RL job:
 
 ```bash
-medarc_slurm rl examples/hendrycks_sanity/rl.toml \
+medarc_slurm rl --config examples/hendrycks_sanity/rl.toml \
     --output-dir output/examples/hendrycks-sanity \
     --train-gpus 1 \
     --infer-gpus 3 \
@@ -32,7 +32,7 @@ medarc_slurm rl examples/hendrycks_sanity/rl.toml \
 Or preview without submitting:
 
 ```bash
-medarc_slurm rl examples/hendrycks_sanity/rl.toml \
+medarc_slurm rl --config examples/hendrycks_sanity/rl.toml \
     --output-dir output/examples/hendrycks-sanity \
     --train-gpus 1 \
     --infer-gpus 3 \
