@@ -10,10 +10,10 @@ This trains `Qwen3-4B-Instruct-2507` to sort names alphabetically using LoRA. Th
 
 ## Setup
 
-Install the environment:
+Install the bundled PRIME-RL environment packages (assuming you want flash attention 3 for Ampere, Hopper, and Lovelace GPUs):
 
 ```bash
-prime env install primeintellect/alphabet-sort
+uv sync --extra envs --extra fa3
 ```
 
 Verify it's installed:

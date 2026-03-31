@@ -55,7 +55,6 @@ def _build_rl_config(tmp_path: Path, *, weight_broadcast_type: str = "filesystem
         """
         [trainer.model]
         cp = 1
-        tp = 1
 
         [orchestrator]
 

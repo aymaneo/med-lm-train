@@ -9,10 +9,15 @@ dependencies = [
     "prime-rl",
     "tomli-w>=1.2.0",
     "typer>=0.24.1",
-    "wandb==0.24.2",
+    "wandb==0.25.1",
+    "vllm>=0.17,<0.18"
 ]
 
 [project.optional-dependencies]
+envs = ["prime-rl[envs]"]
+fa2 = ["prime-rl[flash-attn]"]
+fa3 = ["prime-rl[flash-attn]", "flash_attn_3"]
+fa4 = ["prime-rl[flash-attn]", "flash_attn_3", "flash-attn-4>=4.0.0b4"]
 flash-attn-2 = ["prime-rl[flash-attn]"]
 flash-attn-3 = ["prime-rl[flash-attn]", "flash_attn_3"]
 flash-attn-4 =  ["prime-rl[flash-attn]", "flash_attn_3", "flash-attn-4>=4.0.0b4"]
@@ -22,7 +27,7 @@ medarc_slurm = "medarc_rl.medarc_slurm:app"
 medarc_train = "medarc_rl.medarc_train:app"
 
 [build-system]
-requires = ["uv_build>=0.10.0,<0.11.0"]
+requires = ["uv_build>=0.10.0,<0.12.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
@@ -33,7 +38,6 @@ module-root = ""
 prime-rl = { path = "prime-rl", editable = true }
 torch = { index = "pytorch-cu128" }
 transformers = { git = "https://github.com/huggingface/transformers.git", rev = "5c1c72b" }
-vllm = { url = "https://wheels.vllm.ai/097eb544e9a22810c9b7a59e586b61627b308362/vllm-0.17.0rc0-cp38-abi3-manylinux_2_31_x86_64.whl", marker = "platform_machine == 'x86_64'" }
 flash_attn_3 = { index = "flash-attn-3-cu128-torch2100" }
 
 [[tool.uv.index]]
@@ -65,7 +69,7 @@ override-dependencies = [
     "nvidia-cudnn-cu12>=9.15",
     "nvidia-cutlass-dsl>=4.4.1",
     "transformers>=5.1.0.dev0",
-    "quack-kernels>=0.2.7",
+    "quack-kernels>=0.3.3",
 ]
 
 [tool.pytest.ini_options]

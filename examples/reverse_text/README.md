@@ -10,7 +10,12 @@ We demonstrate how to train `Qwen3-0.6B` to reverse a small chunk of text. We us
 
 ## Setup
 
-The `reverse-text` environment is included in the lock file. Verify it's installed:
+Install the bundled PRIME-RL environment packages (assuming you want flash attention 3 for Ampere, Hopper, and Lovelace GPUs):
+
+```bash
+uv sync --extra envs --extra fa3
+```
+Verify it's installed:
 
 ```bash
 python -c "import reverse_text"

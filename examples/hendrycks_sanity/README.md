@@ -10,7 +10,13 @@ Note: `medarc_train` and `medarc_slurm` accept arbitrary PRIME-RL config overrid
 
 ## Setup
 
-The `math-env` environment is included in the lock file. Verify it's installed:
+Install the bundled PRIME-RL environment packages (assuming you want flash attention 3 for Ampere, Hopper, and Lovelace GPUs):
+
+```bash
+uv sync --extra envs --extra fa3
+```
+
+Verify it's installed:
 
 ```bash
 uv run python -c "import math_verify"

@@ -64,15 +64,12 @@ def _build_sft_inherited_config(tmp_path: Path) -> tuple[Path, Path]:
     return base, child
 
 
-def _build_rl_inherited_config(
-    tmp_path: Path, *, weight_broadcast_type: str = "nccl", cp: int = 2, tp: int = 1
-) -> tuple[Path, Path]:
+def _build_rl_inherited_config(tmp_path: Path, *, weight_broadcast_type: str = "nccl", cp: int = 2) -> tuple[Path, Path]:
     base = _write(
         tmp_path / "rl_base.toml",
         f"""
         [trainer.model]
         cp = {cp}
-        tp = {tp}
 
         [orchestrator]
 
@@ -193,7 +190,7 @@ def test_sft_renders_priority_mail_and_requeue_flags(tmp_path: Path) -> None:
 
 
 def test_rl_defaults_split_to_one_and_one(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     output_dir = tmp_path / "rl_out_missing_split"
 
     result = runner.invoke(
@@ -221,7 +218,7 @@ def test_rl_rejects_total_gpu_count_above_eight(tmp_path: Path) -> None:
 
 
 def test_rl_rejects_train_gpus_above_four(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     output_dir = tmp_path / "rl_out_bad_train_max"
 
     result = runner.invoke(
@@ -234,7 +231,7 @@ def test_rl_rejects_train_gpus_above_four(tmp_path: Path) -> None:
 
 
 def test_rl_rejects_infer_gpus_above_seven(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     output_dir = tmp_path / "rl_out_bad_infer_max"
 
     result = runner.invoke(
@@ -343,7 +340,7 @@ def test_sft_accepts_primerl_style_overrides_and_wrapper_output_dir_wins(tmp_pat
 
 
 def test_rl_accepts_primerl_style_overrides_and_wrapper_gpu_split_wins(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     output_dir = tmp_path / "rl_out_overrides"
 
     result = runner.invoke(
@@ -377,7 +374,7 @@ def test_rl_accepts_primerl_style_overrides_and_wrapper_gpu_split_wins(tmp_path:
 
 
 def test_rl_single_gpu_dry_run(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, weight_broadcast_type="filesystem", cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, weight_broadcast_type="filesystem", cp=1)
     output_dir = tmp_path / "rl_out_single_gpu"
 
     result = runner.invoke(
@@ -398,7 +395,7 @@ def test_rl_single_gpu_dry_run(tmp_path: Path) -> None:
 
 
 def test_rl_renders_priority_mail_and_requeue_flags(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     output_dir = tmp_path / "rl_out_slurm_flags"
 
     result = runner.invoke(
@@ -461,7 +458,7 @@ def test_sft_cpus_per_gpu_custom(tmp_path: Path) -> None:
 
 
 def test_rl_cpus_per_gpu_default(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     output_dir = tmp_path / "rl_out_cpus_default"
 
     result = runner.invoke(
@@ -475,7 +472,7 @@ def test_rl_cpus_per_gpu_default(tmp_path: Path) -> None:
 
 
 def test_rl_cpus_per_gpu_custom(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     output_dir = tmp_path / "rl_out_cpus_custom"
 
     result = runner.invoke(
@@ -504,7 +501,7 @@ def test_sft_exclusive_omits_cpus_per_gpu(tmp_path: Path) -> None:
 
 
 def test_rl_exclusive_omits_cpus_per_gpu(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=4, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=4)
     output_dir = tmp_path / "rl_out_exclusive"
 
     result = runner.invoke(
@@ -585,7 +582,7 @@ def test_sft_uses_toml_output_dir_when_output_dir_omitted(tmp_path: Path) -> Non
 
 
 def test_rl_uses_toml_output_dir_when_output_dir_omitted(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     toml_output_dir = tmp_path / "rl_out_from_toml"
     config_with_output = _write(tmp_path / "rl_with_output.toml", f'output_dir = "{toml_output_dir}"')
 
@@ -626,7 +623,7 @@ def test_sft_dry_run_renders_dependency_and_test_only_flags(tmp_path: Path) -> N
 
 
 def test_rl_dry_run_renders_dependency_and_test_only_flags(tmp_path: Path) -> None:
-    config_paths = _build_rl_inherited_config(tmp_path, cp=1, tp=1)
+    config_paths = _build_rl_inherited_config(tmp_path, cp=1)
     output_dir = tmp_path / "rl_out_dep_test_only"
 
     result = runner.invoke(

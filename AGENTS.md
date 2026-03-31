@@ -12,14 +12,17 @@ med-lm-train provides CLI tools (`medarc_slurm`, `medarc_train`) for single-node
 
 ```bash
 uv sync                                        # Install deps
-uv sync --extra flash-attn                     # With Flash Attention v2
-uv sync --extra flash-attn-3                   # With FA2 + FA3 (H100s)
+uv sync --extra fa2                            # With Flash Attention v2
+uv sync --extra fa3                            # With FA2 + FA3 (H100s)
+uv sync --extra fa4                            # With FA2 + FA3 + FA4 (B200s)
 
 pytest tests/                                   # Run tests
 pytest tests/test_medarc_slurm.py::test_name    # Single test
 ruff check medarc_rl tests                      # Lint
 ruff format medarc_rl tests                     # Format
 ```
+
+Legacy extras `flash-attn-2`, `flash-attn-3`, and `flash-attn-4` remain supported for backward compatibility.
 
 Testing scope:
 - `pyproject.toml` sets `pytest` `testpaths = ["tests"]`, so default collection is scoped correctly.

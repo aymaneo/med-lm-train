@@ -28,12 +28,26 @@ source $HOME/.local/bin/env
 uv sync
 ```
 
+To install the bundled PRIME-RL environment packages used by some examples:
+
+```bash
+uv sync --extra envs
+```
+
 For flash attention support:
 
 ```bash
-uv sync --extra flash-attn-2    # flash-attn 2
-uv sync --extra flash-attn-3    # flash-attn 2 + 3 (use for H100s)
-uv sync --extra flash-attn-4    # flash-attn 2, 3, & 4 (use for B200s)
+uv sync --extra fa2   # flash-attn 2
+uv sync --extra fa3   # flash-attn 2 + 3 (use for H100s)
+uv sync --extra fa4   # flash-attn 2, 3, & 4 (use for B200s)
+```
+
+Legacy extra names `flash-attn-2`, `flash-attn-3`, and `flash-attn-4` remain supported for backward compatibility.
+
+And to install both env and flash attention extras:
+
+```bash
+uv sync --extra envs --extra fa3
 ```
 
 ## medarc_slurm
@@ -91,3 +105,4 @@ Each example has its own README with setup instructions, SFT/RL commands, and ev
 | [alphabet_sort](examples/alphabet_sort/) | 8 | Full-node RL on alphabet sorting |
 
 All examples use `medarc_slurm` to generate and submit single-node SLURM jobs. Start with [reverse_text](examples/reverse_text/) to verify your setup.
+Examples that rely on PRIME-RL environment packages require installing the `envs` extra first: `uv sync --extra envs`.
