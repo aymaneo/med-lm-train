@@ -6,9 +6,11 @@ readme = "README.md"
 requires-python = "~=3.12.0"
 dependencies = [
     "jinja2>=3.1.0",
+    "medarc-verifiers",
     "prime-rl",
     "tomli-w>=1.2.0",
     "typer>=0.24.1",
+    "verifiers",
     "wandb==0.25.1",
     "vllm>=0.17,<0.18"
 ]
@@ -68,6 +70,7 @@ environments = [
 override-dependencies = [
     "nvidia-cudnn-cu12>=9.15",
     "nvidia-cutlass-dsl>=4.4.1",
+    "verifiers",
     "transformers>=5.1.0.dev0",
     "quack-kernels>=0.3.3",
 ]

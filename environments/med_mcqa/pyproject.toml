@@ -1,0 +1,26 @@
+[project]
+name = "med_mcqa"
+description = "Med MCQA evaluation environment"
+readme = "README.md"
+tags = ["medical", "single-turn", "multiple-choice", "train", "eval"]
+version = "0.1.1"
+requires-python = ">=3.10"
+authors = [
+    { name = "Ratna Sagari Grandhi", email = "sagari.grandhi@gmail.com" },
+]
+dependencies = [
+    "datasets>=4.0.0",
+    "medarc-rl>=0.1.0",
+    "verifiers>=0.1.5.post0",
+    "medarc-verifiers>=0.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[tool.prime.environment]
+loader = "med_mcqa:load_environment"
+display_name = "MedMCQA"
+visibility = "PUBLIC"
