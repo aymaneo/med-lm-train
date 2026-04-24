@@ -24,6 +24,8 @@ from prime_rl.utils.pathing import get_log_dir
 from prime_rl.utils.process import cleanup_processes, cleanup_threads, monitor_process
 from prime_rl.utils.utils import get_free_port
 
+from medarc_rl.utils import create_job_cache_root
+
 
 def _env_flag(name: str) -> bool:
     return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
@@ -131,11 +133,7 @@ def rl_local(config: RLConfig) -> None:
 
     slurm_job_id = os.environ.get("SLURM_JOB_ID", "nojob")
     slurm_tmpdir = os.environ.get("SLURM_TMPDIR")
-    if slurm_tmpdir:
-        cache_root = Path(slurm_tmpdir) / f"medarc_rl_launcher_{slurm_job_id}_{uuid.uuid4().hex[:8]}"
-    else:
-        cache_root = Path("/tmp/medarc") / slurm_job_id
-    cache_root.mkdir(parents=True, exist_ok=True)
+    cache_root = create_job_cache_root(slurm_job_id, slurm_tmpdir)
 
     base_env = os.environ.copy()
     processes: list[Popen] = []

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import tempfile
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -39,6 +40,12 @@ def maybe_autoset_auth_env(env: dict[str, str], enabled: bool) -> list[str]:
                 msgs.append("Auto-auth: set HF_TOKEN from local Hugging Face credentials.")
 
     return msgs
+
+
+def create_job_cache_root(slurm_job_id: str, slurm_tmpdir: str | None = None) -> Path:
+    safe_job_id = "".join(char if char.isalnum() or char in {"-", "_"} else "_" for char in slurm_job_id)
+    tmp_base = slurm_tmpdir or tempfile.gettempdir()
+    return Path(tempfile.mkdtemp(prefix=f"medarc-rl-{safe_job_id}-", dir=tmp_base))
 
 
 def _write_toml(path: Path, data: dict[str, Any]) -> None:
