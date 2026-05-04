@@ -1,0 +1,23 @@
+[project]
+name = "supergpqa-stem"
+version = "0.1.0"
+description = "Single-turn STEM RL environment using non-medicine sections of SuperGPQA (Science + Engineering)"
+requires-python = ">=3.11"
+dependencies = [
+    "datasets>=4.0.0",
+    "verifiers>=0.1.2.post0",
+    "medarc-verifiers>=0.1.0",
+    "medarc-rl>=0.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["supergpqa_stem.py"]
+
+[tool.prime.environment]
+loader = "supergpqa_stem:load_environment"
+display_name = "SuperGPQA-STEM"
+visibility = "PRIVATE"
