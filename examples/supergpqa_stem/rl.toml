@@ -1,11 +1,6 @@
-max_steps = 1000
+max_steps = 200
 seq_len = 2048
-max_async_level = 1
-
-[deployment]
-type = "single_node"
-num_train_gpus = 2
-num_infer_gpus = 6
+max_async_level = 3
 
 [wandb]
 project = "stem-reasoning"
@@ -14,60 +9,50 @@ name = "supergpqa_stem_qwen3_4b"
 [model]
 name = "Qwen/Qwen3-4B-Instruct-2507"
 
+[weight_broadcast]
+type = "filesystem"
+
 [orchestrator]
-token_batch_size = 524288
-rollouts_per_example = 16
+
+token_batch_size = 131072
+rollouts_per_example = 8
 max_inflight_rollouts = 512
-max_concurrent = 96
 
 [orchestrator.sampling]
-max_tokens = 1024
+max_tokens = 2048
 temperature = 1.0
 
 [[orchestrator.env]]
 id = "supergpqa_stem"
 name = "supergpqa-stem"
-args = { train_answer_formats = "random", training_shuffle_answers = true, training_seed = 23 }
-
-[orchestrator.buffer]
-env_ratios = [1]
-online_difficulty_filtering = true
-easy_threshold = 0.8
-hard_threshold = 0.2
-easy_fraction = 0.0
-hard_fraction = 0.0
-
-[orchestrator.val]
-interval = 50
-num_examples = 512
-rollouts_per_example = 8
+args = {training_shuffle_answers = true}
 
 [orchestrator.eval]
-interval = 200
+interval = 50
 rollouts_per_example = 1
 
 [orchestrator.eval.sampling]
 seed = 42
 temperature = 0.0
+max_tokens = 2048  
 
-# Medical evals — watch for reasoning transfer from STEM
+# Medical evals 
 [[orchestrator.eval.env]]
 id = "medqa"
 
 [[orchestrator.eval.env]]
 id = "med_mcqa"
 
-#[[orchestrator.eval.env]]
-#id = "supergpqa_medicine"  # uncomment once installed on server
+[[orchestrator.eval.env]]
+id = "supergpqa_medicine"  
+
+[[orchestrator.eval.env]]
+id = "supergpqa_stem" 
 
 [trainer.model]
 impl = "auto"
 attn = "flash_attention_3"
 seq_len = 9216
-
-[trainer.model.ac]
-mode = "full"
-freq = 2
 
 [trainer.model.compile]
 
@@ -82,11 +67,6 @@ save_adapter_separately = true
 lr = 5e-6
 max_norm = 1.0
 
-[trainer.scheduler]
-type = "linear"
-warmup_steps = 100
-decay_steps = 0
-
 [inference]
 enable_lora = true
 gpu_memory_utilization = 0.9
@@ -96,7 +76,7 @@ tp = 1
 dp = 6
 
 [inference.model]
-max_model_len = 8192
+max_model_len = 12288
 
 [ckpt]
 interval = 50
